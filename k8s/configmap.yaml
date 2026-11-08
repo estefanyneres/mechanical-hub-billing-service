@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: billing-service-config
+  namespace: billing-service
+data:
+  DB_HOST: "${DB_HOST}"
+  DB_PORT: "5432"
+  DB_NAME: "billing_service_db"
+  DB_USER: "dbadmin"
+  RABBITMQ_HOST: "rabbitmq.rabbitmq.svc.cluster.local"
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USERNAME: "mechanical-hub"
+  REPAIR_SERVICE_URL: "http://repair-service.repair-service.svc.cluster.local"
+  CORE_SERVICE_URL: "http://core-service.core-service.svc.cluster.local"
+  # Preenchido pela pipeline via secret ${API_GATEWAY_URL} (endpoint
+  # publico do api-gateway, TASK-013) -- mesma categoria do
+  # SONAR_HOST_URL, muda a cada sessao do AWS Academy.
+  API_GATEWAY_URL: "${API_GATEWAY_URL}"
+  TZ: "America/Sao_Paulo"
+  SPRING_PROFILES_ACTIVE: "prod"

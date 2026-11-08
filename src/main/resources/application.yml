@@ -1,0 +1,58 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+repair-service:
+  url: ${REPAIR_SERVICE_URL:http://repair-service.repair-service.svc.cluster.local}
+
+core-service:
+  url: ${CORE_SERVICE_URL:http://core-service.core-service.svc.cluster.local}
+
+# Endpoint publico do API Gateway (TASK-013) -- muda a cada sessao nova do
+# AWS Academy (endpoint gerado pela AWS), precisa ser preenchido via
+# secret/env var por sessao, mesma categoria do SONAR_HOST_URL.
+api-gateway:
+  public-url: ${API_GATEWAY_URL}
+
+mercadopago:
+  access-token: ${MERCADOPAGO_ACCESS_TOKEN}
+  # Credencial separada do access-token: usada so pra validar o
+  # x-signature das notificacoes do webhook (TASK-035), nao pra chamar a
+  # API deles.
+  webhook-secret: ${MERCADOPAGO_WEBHOOK_SECRET}
+
+api:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+
+logging:
+  level:
+    root: WARN
+    com.fiap.mechanical_hub.billing_service: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  statsd:
+    metrics:
+      export:
+        flavor: datadog
+        host: ${DD_AGENT_HOST:localhost}
+        port: 8125
