@@ -32,16 +32,26 @@ public class SagaEventListener {
 
     @RabbitListener(queues = RabbitMQConfig.BILLING_SERVICE_QUEUE)
     public void onMessage(Message message) throws IOException {
-        log.warn("[DEBUG-SAGA] mensagem recebida na fila: {}", new String(message.getBody()));
+        debugRaw("onMessage ENTROU, thread=" + Thread.currentThread().getName());
         try {
+            log.warn("[DEBUG-SAGA] mensagem recebida na fila: {}", new String(message.getBody()));
             JsonNode body = objectMapper.readTree(message.getBody());
             UUID serviceOrderId = UUID.fromString(body.get("serviceOrderId").asText());
             log.warn("[DEBUG-SAGA] gerando orcamento para OS {}", serviceOrderId);
             budgetUseCase.generateBudget(serviceOrderId);
             log.warn("[DEBUG-SAGA] orcamento gerado com sucesso para OS {}", serviceOrderId);
-        } catch (Exception exception) {
-            log.error("[DEBUG-SAGA] falha ao processar orcamento.solicitado", exception);
-            throw exception;
+        } catch (Throwable throwable) {
+            debugRaw("falhou: " + throwable);
+            if (throwable instanceof RuntimeException runtimeException) {
+                throw runtimeException;
+            }
+            throw new RuntimeException(throwable);
         }
+    }
+
+    @SuppressWarnings("java:S106")
+    private static void debugRaw(String text) {
+        System.err.println("[DEBUG-SAGA-RAW] " + text);
+        System.err.flush();
     }
 }
