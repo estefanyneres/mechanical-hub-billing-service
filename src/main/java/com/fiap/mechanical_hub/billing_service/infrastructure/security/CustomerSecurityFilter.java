@@ -4,7 +4,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +21,6 @@ import java.util.UUID;
  * por JWT. Principal e o proprio UUID do cliente (sem UserDetails: este
  * servico nao tem entidade Customer).
  */
-@Slf4j
 @Component
 public class CustomerSecurityFilter extends OncePerRequestFilter {
 
@@ -36,16 +34,13 @@ public class CustomerSecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String token = recoverToken(request);
-        log.warn("[DEBUG-JWT] path={} tokenPresente={}", request.getRequestURI(), token != null);
 
         if (token != null) {
             UUID customerId = customerJwtValidator.validateAndExtractCustomerId(token);
-            log.warn("[DEBUG-JWT] customerId resolvido={}", customerId);
             if (customerId != null) {
                 var authentication = new UsernamePasswordAuthenticationToken(
                         customerId, null, List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.warn("[DEBUG-JWT] authentication setada, authorities={}", authentication.getAuthorities());
             }
         }
 

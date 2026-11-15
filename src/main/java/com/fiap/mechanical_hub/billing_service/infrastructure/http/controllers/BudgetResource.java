@@ -2,7 +2,6 @@ package com.fiap.mechanical_hub.billing_service.infrastructure.http.controllers;
 
 import com.fiap.mechanical_hub.billing_service.application.dto.RejectBudgetRequest;
 import com.fiap.mechanical_hub.billing_service.application.usecases.BudgetApprovalUseCase;
-import lombok.extern.slf4j.Slf4j;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -24,7 +23,6 @@ import java.util.UUID;
  * via CustomerSecurityFilter, nunca pelo corpo da requisicao (o id do
  * cliente vem do JWT, nao e informado pelo chamador).
  */
-@Slf4j
 @RestController
 @RequestMapping("/budgets")
 @SecurityRequirement(name = "bearerAuth")
@@ -52,14 +50,7 @@ public class BudgetResource {
     public ResponseEntity<Map<String, String>> approve(
             @PathVariable UUID serviceOrderId,
             @AuthenticationPrincipal UUID customerId) {
-        log.warn("[DEBUG-JWT] approve chamado, customerId={}", customerId);
-        String paymentLink;
-        try {
-            paymentLink = useCase.approve(serviceOrderId, customerId);
-        } catch (RuntimeException ex) {
-            log.warn("[DEBUG-JWT] approve falhou: {} - {}", ex.getClass().getName(), ex.getMessage(), ex);
-            throw ex;
-        }
+        String paymentLink = useCase.approve(serviceOrderId, customerId);
         return ResponseEntity.ok(Map.of("paymentLink", paymentLink));
     }
 

@@ -47,7 +47,6 @@ class CustomerSecurityFilterTest {
     @Test
     void doFilter_ShouldNotAuthenticate_WhenNoAuthorizationHeader() throws Exception {
         when(request.getHeader("Authorization")).thenReturn(null);
-        when(request.getRequestURI()).thenReturn("/budgets/abc/approve");
 
         filter.doFilter(request, response, filterChain);
 
@@ -58,7 +57,6 @@ class CustomerSecurityFilterTest {
     @Test
     void doFilter_ShouldNotAuthenticate_WhenTokenInvalid() throws Exception {
         when(request.getHeader("Authorization")).thenReturn("Bearer token-invalido");
-        when(request.getRequestURI()).thenReturn("/budgets/abc/approve");
         when(customerJwtValidator.validateAndExtractCustomerId("token-invalido")).thenReturn(null);
 
         filter.doFilter(request, response, filterChain);
@@ -71,7 +69,6 @@ class CustomerSecurityFilterTest {
     void doFilter_ShouldAuthenticateAsCustomer_WhenTokenValid() throws Exception {
         UUID customerId = UUID.randomUUID();
         when(request.getHeader("Authorization")).thenReturn("Bearer token-valido");
-        when(request.getRequestURI()).thenReturn("/budgets/abc/approve");
         when(customerJwtValidator.validateAndExtractCustomerId("token-valido")).thenReturn(customerId);
 
         filter.doFilter(request, response, filterChain);
