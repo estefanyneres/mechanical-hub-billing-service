@@ -14,7 +14,9 @@ import org.springframework.amqp.core.MessageProperties;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 class SagaEventListenerTest {
@@ -41,5 +43,20 @@ class SagaEventListenerTest {
         listener.onMessage(message);
 
         verify(budgetUseCase).generateBudget(serviceOrderId);
+    }
+
+    @Test
+    @DisplayName("Deve logar e repropagar a exceção quando o BudgetUseCase falhar")
+    void onMessage_ShouldRethrowWhenBudgetUseCaseFails() {
+        UUID serviceOrderId = UUID.randomUUID();
+        String payload = """
+                {"serviceOrderId": "%s", "orderNumber": "OS-1", "requestDescription": "desc"}
+                """.formatted(serviceOrderId);
+        Message message = new Message(payload.getBytes(StandardCharsets.UTF_8), new MessageProperties());
+        doThrow(new RuntimeException("falha simulada")).when(budgetUseCase).generateBudget(serviceOrderId);
+
+        assertThatThrownBy(() -> listener.onMessage(message))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("falha simulada");
     }
 }

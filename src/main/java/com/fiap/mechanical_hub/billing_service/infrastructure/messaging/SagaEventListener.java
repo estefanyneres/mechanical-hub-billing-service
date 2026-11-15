@@ -3,6 +3,7 @@ package com.fiap.mechanical_hub.billing_service.infrastructure.messaging;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiap.mechanical_hub.billing_service.application.usecases.BudgetUseCase;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.util.UUID;
  * enquanto (orcamento.solicitado), mas mantem o mesmo formato dos outros
  * servicos pra quando a TASK-034/036 adicionar mais.
  */
+@Slf4j
 @Component
 public class SagaEventListener {
 
@@ -30,8 +32,16 @@ public class SagaEventListener {
 
     @RabbitListener(queues = RabbitMQConfig.BILLING_SERVICE_QUEUE)
     public void onMessage(Message message) throws IOException {
-        JsonNode body = objectMapper.readTree(message.getBody());
-        UUID serviceOrderId = UUID.fromString(body.get("serviceOrderId").asText());
-        budgetUseCase.generateBudget(serviceOrderId);
+        log.warn("[DEBUG-SAGA] mensagem recebida na fila: {}", new String(message.getBody()));
+        try {
+            JsonNode body = objectMapper.readTree(message.getBody());
+            UUID serviceOrderId = UUID.fromString(body.get("serviceOrderId").asText());
+            log.warn("[DEBUG-SAGA] gerando orcamento para OS {}", serviceOrderId);
+            budgetUseCase.generateBudget(serviceOrderId);
+            log.warn("[DEBUG-SAGA] orcamento gerado com sucesso para OS {}", serviceOrderId);
+        } catch (Exception exception) {
+            log.error("[DEBUG-SAGA] falha ao processar orcamento.solicitado", exception);
+            throw exception;
+        }
     }
 }
