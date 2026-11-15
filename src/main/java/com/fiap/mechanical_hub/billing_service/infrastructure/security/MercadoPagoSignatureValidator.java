@@ -1,5 +1,6 @@
 package com.fiap.mechanical_hub.billing_service.infrastructure.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,7 @@ import java.util.Map;
  * re-validar contra uma notificacao real de teste antes de confiar nisso
  * em produção.
  */
+@Slf4j
 @Component
 public class MercadoPagoSignatureValidator {
 
@@ -69,6 +71,8 @@ public class MercadoPagoSignatureValidator {
 
         String manifest = buildManifest(dataId, xRequestId, ts);
         String computedHash = hmacSha256Hex(manifest, webhookSecret);
+        log.warn("[DEBUG-MP] manifest='{}' secretLen={} computed={} expected={}",
+                manifest, webhookSecret == null ? -1 : webhookSecret.length(), computedHash, expectedHash);
 
         return constantTimeEquals(computedHash, expectedHash);
     }

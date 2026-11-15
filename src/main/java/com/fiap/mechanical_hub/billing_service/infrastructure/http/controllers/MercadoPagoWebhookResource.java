@@ -51,6 +51,9 @@ public class MercadoPagoWebhookResource {
             @RequestBody(required = false) WebhookNotificationBody body) {
 
         String dataId = resolveDataId(dataIdQueryParam, body);
+        log.warn("[DEBUG-MP] xSignature='{}' xRequestId='{}' dataIdQueryParam='{}' bodyDataId='{}' resolvedDataId='{}'",
+                xSignature, xRequestId, dataIdQueryParam,
+                body != null && body.data() != null ? body.data().id() : null, dataId);
 
         if (!signatureValidator.isValid(xSignature, xRequestId, dataId)) {
             log.warn("Assinatura x-signature inválida no webhook do Mercado Pago - requisição rejeitada");
