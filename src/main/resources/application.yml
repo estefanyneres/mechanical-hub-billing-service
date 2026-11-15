@@ -44,6 +44,7 @@ logging:
   level:
     root: WARN
     com.fiap.mechanical_hub.billing_service: INFO
+    org.springframework.security: DEBUG
 
 management:
   endpoints:
