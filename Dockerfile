@@ -22,4 +22,4 @@ EXPOSE 8080
 
 ENV TZ=America/Sao_Paulo
 
-ENTRYPOINT ["java", "-javaagent:/app/dd-java-agent.jar", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
