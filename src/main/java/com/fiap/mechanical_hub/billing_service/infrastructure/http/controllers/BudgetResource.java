@@ -53,7 +53,13 @@ public class BudgetResource {
             @PathVariable UUID serviceOrderId,
             @AuthenticationPrincipal UUID customerId) {
         log.warn("[DEBUG-JWT] approve chamado, customerId={}", customerId);
-        String paymentLink = useCase.approve(serviceOrderId, customerId);
+        String paymentLink;
+        try {
+            paymentLink = useCase.approve(serviceOrderId, customerId);
+        } catch (RuntimeException ex) {
+            log.warn("[DEBUG-JWT] approve falhou: {} - {}", ex.getClass().getName(), ex.getMessage(), ex);
+            throw ex;
+        }
         return ResponseEntity.ok(Map.of("paymentLink", paymentLink));
     }
 
