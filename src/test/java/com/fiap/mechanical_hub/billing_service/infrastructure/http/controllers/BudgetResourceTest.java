@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,6 +45,16 @@ class BudgetResourceTest {
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).containsEntry("paymentLink", "https://mercadopago.com/pay/pref-123");
+    }
+
+    @Test
+    @DisplayName("Deve repropagar a excecao quando o useCase falhar ao aprovar")
+    void approve_ShouldRethrowWhenUseCaseFails() {
+        when(useCase.approve(serviceOrderId, customerId)).thenThrow(new RuntimeException("falha simulada"));
+
+        assertThatThrownBy(() -> resource.approve(serviceOrderId, customerId))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("falha simulada");
     }
 
     @Test
