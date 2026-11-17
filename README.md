@@ -66,7 +66,11 @@ Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 ./mvnw test
 ```
 
-**69 testes**, **87,8% de cobertura** (gate SonarQube: 80% em código novo).
+**69 testes**, **88,3% de cobertura** (gate SonarQube: 80% em código novo).
+
+**Evidência de cobertura (SonarQube):**
+
+![Cobertura de testes - SonarQube](docs/desenhos/cobertura-sonar-fase-04.png)
 
 ## Deploy
 
