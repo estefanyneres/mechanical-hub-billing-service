@@ -2,6 +2,10 @@
 
 Microsserviço de **orçamento e pagamento** do Mechanical Hub (Fase 4 — Tech Challenge). Dono do cálculo/aprovação do orçamento e da integração com o **Mercado Pago**, participante do Saga Pattern orquestrado pelo [`core-service`](https://github.com/estefanyneres/mechanical-hub-core-service).
 
+## Diagrama de infraestrutura
+
+![Infraestrutura AWS - Fase 4](docs/desenhos/mechanical-hub-infraestrutura-fase-04.jpg)
+
 ## Arquitetura
 
 Clean Architecture (`domain` / `application` / `infrastructure`):
