@@ -22,6 +22,17 @@ Clean Architecture (`domain` / `application` / `infrastructure`):
 **Publica:** `orcamento.gerado`, `orcamento.aprovado`, `orcamento.recusado`, `pagamento.confirmado`, `pagamento.falhou`
 **Consome:** `orcamento.solicitado`
 
+**Diagrama do fluxo** (quem fala com quem):
+
+```mermaid
+flowchart LR
+    O["core-service<br/>(orquestrador)"] <-->|eventos do Saga| MQ(("RabbitMQ<br/>saga.exchange"))
+    MQ <--> B["billing-service<br/>orçamento + pagamento"]
+    MQ <--> R["repair-service<br/>material + tarefas"]
+    MQ <--> S["stock-service<br/>estoque"]
+    R <-.REST síncrono.-> S
+```
+
 ### Mercado Pago
 
 - Checkout Pro com a **API de Preferences** (não Orders — mais recente, com menos exemplos da comunidade)
